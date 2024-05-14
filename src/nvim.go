@@ -59,7 +59,7 @@ func prepareBuffer(client *nvim.Nvim) (*nvim.Buffer, error) {
 	batch.SetBufferOption(buf, "bufhidden", "delete")
 	batch.Command("augroup nvb")
 	batch.Command(fmt.Sprintf("autocmd VimLeave * if exists(\"v:exiting\") && v:exiting > 0 | call rpcnotify(%d, \"Exit\", v:exiting) | endif", thisId))
-	batch.Command(fmt.Sprintf("autocmd BufUnload <buffer=%d> silent! call rpcnotify(%d, \"Delete\", &modified)", buf, thisId))
+	batch.Command(fmt.Sprintf("autocmd BufDelete <buffer=%d> silent! call rpcnotify(%d, \"Delete\", &modified)", buf, thisId))
 	batch.Command("augroup END")
 
 	if err = batch.Execute(); err != nil {
