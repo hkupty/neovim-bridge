@@ -12,6 +12,7 @@ var (
 	thisId      int
 	wg          sync.WaitGroup
 	file        *os.File
+	exit        int
 )
 
 func init() {
@@ -76,4 +77,5 @@ func main() {
 	}
 
 	wg.Wait()
+	os.Exit(exit)
 }

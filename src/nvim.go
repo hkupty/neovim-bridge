@@ -13,10 +13,12 @@ func newClient() (*nvim.Nvim, error) {
 		return nil, err
 	}
 
-	err = cl.RegisterHandler("Exit", func(cl *nvim.Nvim) error {
+	err = cl.RegisterHandler("Exit", func(cl *nvim.Nvim, exitCode int) error {
 		defer cl.Close()
-		fmt.Println("Exit")
 		wg.Done()
+		fmt.Printf("Exit\n")
+
+		exit = exitCode
 
 		return nil
 	})
@@ -26,10 +28,13 @@ func newClient() (*nvim.Nvim, error) {
 		return nil, err
 	}
 
-	err = cl.RegisterHandler("Delete", func(cl *nvim.Nvim, buf int) error {
+	err = cl.RegisterHandler("Delete", func(cl *nvim.Nvim, modified bool) error {
 		defer cl.Close()
-		fmt.Println("Done")
 		wg.Done()
+
+		if modified {
+			exit = 1
+		}
 
 		return nil
 	})
@@ -54,7 +59,7 @@ func prepareBuffer(client *nvim.Nvim) (*nvim.Buffer, error) {
 	batch.SetBufferOption(buf, "bufhidden", "delete")
 	batch.Command("augroup nvb")
 	batch.Command(fmt.Sprintf("autocmd VimLeave * if exists(\"v:exiting\") && v:exiting > 0 | call rpcnotify(%d, \"Exit\", v:exiting) | endif", thisId))
-	batch.Command(fmt.Sprintf("autocmd BufDelete <buffer=%d> silent! call rpcnotify(%d, \"Delete\", %d)", buf, thisId, buf))
+	batch.Command(fmt.Sprintf("autocmd BufUnload <buffer=%d> silent! call rpcnotify(%d, \"Delete\", &modified)", buf, thisId))
 	batch.Command("augroup END")
 
 	if err = batch.Execute(); err != nil {
