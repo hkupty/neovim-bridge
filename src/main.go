@@ -11,7 +11,7 @@ var (
 	nvimAddress string
 	thisId      int
 	wg          sync.WaitGroup
-	file        *os.File
+	filename    string
 	exit        int
 )
 
@@ -36,11 +36,13 @@ func main() {
 	thisId = client.ChannelID()
 
 	if isPipe {
-		file, err = os.CreateTemp("", "nvb-*")
+		file, err := os.CreateTemp("", "nvb-*")
 		if err != nil {
 			panic(err)
 		}
-		defer os.Remove(file.Name())
+
+		filename = file.Name()
+		defer os.Remove(filename)
 		_, err = io.Copy(file, os.Stdin)
 
 		if err != nil {
@@ -48,10 +50,7 @@ func main() {
 		}
 	} else {
 		if len(os.Args) > 1 {
-			file, err = os.OpenFile(os.Args[1], os.O_RDWR|os.O_APPEND, 0666)
-			if err != nil {
-				panic(err)
-			}
+			filename = os.Args[1]
 		} else {
 			panic("No file")
 		}
@@ -63,7 +62,7 @@ func main() {
 		panic(err)
 	}
 
-	_, err = client.Exec("edit "+file.Name(), false)
+	_, err = client.Exec("edit "+filename, false)
 	wg.Add(1)
 
 	if err != nil {

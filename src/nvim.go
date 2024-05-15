@@ -95,5 +95,4 @@ func newWindow(client *nvim.Nvim) (*nvim.Window, error) {
 	}
 
 	return &window, nil
-
 }
