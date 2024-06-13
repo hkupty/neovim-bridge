@@ -8,7 +8,6 @@ import (
 
 var (
 	isPipe      bool
-	nvimAddress string
 	thisId      int
 	wg          sync.WaitGroup
 	filename    string
@@ -25,7 +24,6 @@ func init() {
 }
 
 func main() {
-	nvimAddress = os.Getenv("NVIM")
 	client, err := newClient()
 
 	if err != nil {

@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/neovim/go-client/nvim"
 )
 
 func newClient() (*nvim.Nvim, error) {
+	nvimAddress := os.Getenv("NVIM")
 	cl, err := nvim.Dial(nvimAddress)
 
 	if err != nil {
