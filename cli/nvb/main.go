@@ -1,17 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
-	"sync"
+
+	"github.com/hkupty/neovim-bridge/share"
 )
 
 var (
-	isPipe      bool
-	thisId      int
-	wg          sync.WaitGroup
-	filename    string
-	exit        int
+	isPipe   bool
+	filename string
 )
 
 func init() {
@@ -19,19 +18,21 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	wg = sync.WaitGroup{}
 	isPipe = (i.Mode() & os.ModeCharDevice) != os.ModeCharDevice
 }
 
 func main() {
-	client, err := newClient()
+	client, err := share.NewClient()
 
 	if err != nil {
 		panic(err)
 	}
-	defer client.Close()
 
-	thisId = client.ChannelID()
+	if err = client.RegisterBufferHandlers(); err != nil {
+		panic(err)
+	}
+
+	defer client.Close()
 
 	if isPipe {
 		file, err := os.CreateTemp("", "nvb-*")
@@ -54,25 +55,29 @@ func main() {
 		}
 	}
 
-	_, err = newWindow(client)
+	_, err = client.NewWindow()
 
 	if err != nil {
 		panic(err)
+	}
+
+	if filename == "" {
+		panic(fmt.Sprintf("Filename is %s, isPipe is %t", filename, isPipe))
 	}
 
 	_, err = client.Exec("edit "+filename, false)
-	wg.Add(1)
+	client.IncreaseLock()
 
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = prepareBuffer(client)
+	_, err = client.PrepareBuffer()
 
 	if err != nil {
 		panic(err)
 	}
 
-	wg.Wait()
-	os.Exit(exit)
+	client.Wait()
+	os.Exit(client.Exit)
 }
