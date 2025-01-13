@@ -5,6 +5,9 @@ tasks:
     sources:
       - cli/**/*.go
       - share/**/*.go
+    generates:
+      - nvb
+      - nvl
     env:
       CGO_ENABLED: 0
       GOOS: linux
