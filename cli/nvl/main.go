@@ -22,7 +22,10 @@ func main() {
 	}
 	defer client.Close()
 
-	location := os.Args[len(os.Args)-1]
+	location := "."
+	if len(os.Args) > 1 {
+		location = os.Args[len(os.Args)-1]
+	}
 	absoluteLocation, err := filepath.Abs(location)
 
 	if err != nil {
@@ -39,7 +42,6 @@ func main() {
 	commandStr.WriteString(string(target))
 	commandStr.WriteString("cd ")
 	commandStr.WriteString(absoluteLocation)
-
 
 	client.Exec(commandStr.String(), false)
 
