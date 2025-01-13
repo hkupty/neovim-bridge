@@ -1,0 +1,19 @@
+---
+version: '3'
+tasks:
+  build:
+    sources:
+      - cli/**/*.go
+      - share/**/*.go
+    env:
+      CGO_ENABLED: 0
+      GOOS: linux
+    cmds:
+      - go build -ldflags="-s -w" -o nvb ./cli/nvb/
+      - go build -ldflags="-s -w" -o nvl ./cli/nvl/
+  install:
+    deps: [build]
+    cmds:
+      - cp nvb ~/.local/bin/nvb
+      - cp nvl ~/.local/bin/nvl
+      - chmod +x ~/.local/bin/nv{l,b}
