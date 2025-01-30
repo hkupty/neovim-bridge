@@ -81,7 +81,7 @@ func main() {
 			os.Exit(3)
 		}
 
-		slog.Warn("Neovim might not be running. Spawning", "filename", filename)
+		slog.Debug("Neovim might not be running. Spawning", "filename", filename)
 
 		err = syscall.Exec(nvimPath, []string{"nvim", filename}, syscall.Environ())
 
