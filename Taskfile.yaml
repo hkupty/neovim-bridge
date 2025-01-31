@@ -17,6 +17,6 @@ tasks:
   install:
     deps: [build]
     cmds:
-      - cp nvb ~/.local/bin/nvb
-      - cp nvl ~/.local/bin/nvl
+      - sudo cp nvb /usr/bin/nvb
+      - sudo cp nvl /usr/bin/nvl
       - chmod +x ~/.local/bin/nv{l,b}
