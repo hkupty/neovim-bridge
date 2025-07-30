@@ -11,3 +11,15 @@ It is a subset of [neovim-remote](https://github.com/mhinz/neovim-remote), aimin
 It has one fundamental difference over `neovim-remote`: the files are created setting `bufhidden=delete`, which means once you `:x` on that buffer, `nvb` will get a notification from neovim and release the process.
 
 It also can be used on terminals outside neovim, spawning a neovim instane in place
+
+### Usage
+
+`nvb <file>` - open file in a new vertical tab; If neovim is not open, runs neovim and opens the file;
+
+`<command> | nvb` - Opens the output of command in neovim;
+
+`EDITOR=nvb <command>` - runs command using `nvb` as editor, for example `EDITOR=nvb git commit`.
+
+`nvl` - sets current shell directory as the tab directory in neovim
+
+`nvl <path>` - sets path as the tab directory in neovim
